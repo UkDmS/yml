@@ -11,8 +11,7 @@ class yml
     private $currency;
     private $rate;
 
-    public function __construct($startTime)
-    {
+    public function __construct($startTime){
         date_default_timezone_set('Europe/Moscow');
         $options = get_option('yml_settings');
         $this->startTime = $startTime;
@@ -28,16 +27,14 @@ class yml
     public function get_url(){ return $this->url; }
     public function set_header(){ header('Content-type:application/xml'); }
 
-    public function prepare_field($s)
-    {
+    public function prepare_field($s){
         $from = array('"', '&', '>', '<', '\'');
         $to = array('&quot;', '&amp;', '&gt;', '&lt;', '&apos;');
         $s = str_replace($from, $to, $s);
         return trim($s);
     }
 
-    public function set_shop()
-    {
+    public function set_shop(){
         $this->shop['name'] = $this->prepare_field($this->get_name());
         $this->shop['company'] = $this->prepare_field($this->get_company());
         $this->shop['url'] = $this->prepare_field($this->get_url());
@@ -45,18 +42,15 @@ class yml
         return $this->shop;
     }
 
-    public function convert_array_to_tag($arr)
-    {
+    public function convert_array_to_tag($arr){
         $s = '';
-        foreach($arr as $tag=>$val)
-        {
+        foreach($arr as $tag=>$val){
             $s .= '<'.$tag.'>'.$val.'</'.$tag.'>'."\r\n";
         }
         return $s;
     }
 
-    public function set_currency($currency,$rate)
-    {
+    public function set_currency($currency,$rate){
         $response = array_map(function($currency, $rate){
             return "<currencies><currency id='".$currency."' rate='".$rate."'/></currencies>\r\n";},
             $currency,
@@ -64,8 +58,7 @@ class yml
         return $response;
     }
 
-    public function category_section()
-    {
+    public function category_section(){
         $options = get_option( 'yml_settings_category' );
         $categories = get_terms('category', array(
             'orderby' => 'term_id',
@@ -74,10 +67,8 @@ class yml
         ));
         $category_ids = array();
         $s .= '<categories>' . "\r\n";
-        foreach ($categories as $category)
-        {
-            if(in_array($category->term_id,$options['yml_list_category']))
-            {
+        foreach ($categories as $category){
+            if(in_array($category->term_id,$options['yml_list_category'])){
                 $s .="<category id='".$category->term_id."'>".$category->name."</category>\r\n";
                 $category_ids[] = $category->term_id;
             }
@@ -86,8 +77,7 @@ class yml
         return $s;
     }
 
-    public function offers_section()
-    {
+    public function offers_section(){
         $options = get_option( 'yml_settings_category' );
         $category_ids = $options['yml_list_category'];
         if(empty($category_ids)){
@@ -108,8 +98,7 @@ class yml
             array('fields' => 'all_with_object_id')
         );
         $terms = array();
-        foreach ($term_data as $term)
-        {
+        foreach ($term_data as $term){
             $terms[$term->object_id][$term->taxonomy][$term->term_id] = array('name' => trim($term->name), 'parent' => intval($term->parent));
         }
         foreach ($posts as $post) {
@@ -141,22 +130,20 @@ class yml
 			$s .= "<pickup>false</pickup>\r\n";
 			$s .= "<delivery>true</delivery>\r\n";
             if ($brands) {
-			    $s .= "<vendor>".$brands."</vendor>\r\n";
-				$s .= "<vendorCode>".get_post_meta($post->ID,'articul',true)."</vendorCode>\r\n";
-				$s .= "<model>".$post->post_name."</model>\r\n";
+                $s .="<name>".$post->post_title."</name>\r\n";
+                $s .= "<vendor>".$brands."</vendor>\r\n";
+                $s .= "<model>".$post->post_name."</model>\r\n";
 			}
-            else
-            {
-				$s .="<name>".$post->post_name."</name>\r\n";
+            else{
+				$s .="<name>".$post->post_title."</name>\r\n";
 			}
             $from = array('"', '&', '>', '<', '\'');
             $to = array('&quot;', '&amp;', '&gt;', '&lt;', '&apos;');
             $post->post_content = str_replace($from, $to, $post->post_content);
             $s .="<description><![CDATA[".trim(str_replace(array("\r\n", "\n", "\r"), array(' ', ' ', ' '), strip_tags(html_entity_decode((string)$post->post_content))))."]]></description> \r\n";
-			$s .='<downloadable>false</downloadable>'."\r\n";
+            $s .='<downloadable>false</downloadable>'."\r\n";
             foreach ($records as $record_key=>$record_data) {
-                if ($record_key && (substr($record_key, 0, 5) == 'cond_' || in_array($record_key, array('cooling','heating','filtering','ionization','ultrasonic_cleaning','ultraviolet_radiation','dehumidification','humidification','ventilation','fresh_air','maximum_height_difference'))))
-                {
+                if(in_array($record_key,$options['yml_list_options'])){
                     $field_object = get_field_object($record_key,$post->ID);
                     if(!empty($field_object['value']))
                     $s .= "<param name='".$field_object['label']."'>".$field_object['value']."</param>\r\n";
@@ -168,89 +155,46 @@ class yml
         return $s;
     }
 
-    public function render_header_xml()
-    {
+    public function render_header_xml(){
         $body = '<?xml version="1.0" encoding="UTF-8"?>'. "\r\n".'<!DOCTYPE yml_catalog SYSTEM "shops.dtd">'."\r\n".
         '<yml_catalog date="'.date('Y-m-d H:i').'">'. "\r\n";
         return $body;
-
     }
 
-    public function render_footer_xml()
-
-    {
-
+    public function render_footer_xml(){
         return '</yml_catalog>';
-
     }
 
-    public function render_main_xml()
-
-    {
+    public function render_main_xml(){
         $body = '<shop>'. "\r\n";
-
         $shop = $this->set_shop($name,$company,$url,$platform);
-
         $body .= $this->convert_array_to_tag($shop);
-
-        foreach($this->set_currency($this->currency,$this->rate) as $item)
-        {
+        foreach($this->set_currency($this->currency,$this->rate) as $item){
             $body .= $item;
         }
-
         $body .= $this->category_section();
-
         $body .= $this->offers_section();
-
         $body .= '</shop>'. "\r\n";
-
         return $body;
-
     }
 
-    public function render_xml()
-
-    {
+    public function render_xml(){
         $string = $this->render_header_xml();
-
         $string.= $this->render_main_xml();
-
         $string.= $this->render_footer_xml();
-
         return $string;
-
     }
 
-    public function save_file($market)
-    {
+    public function save_file($market){
         $path = wp_upload_dir() ;
         $options = get_option( 'yml_settings_file' );
         $output_file = $path['basedir']."/tmp/".$options['yml_file_path'];
-
         file_put_contents($output_file, $market);
-
     }
-
-
-
 }
 
 $yml = new yml($startTime = microtime(true));
 $market =  $yml->render_xml();
 $yml->set_header();
-//$yml->save_file($market);
+$yml->save_file($market);
 //echo $market;
-
-            $args = array( 'numberposts'=>'-1','post_type'=>'acf','include'=>array('4001','4006','4002','4003','4004','4007','4008','4009','4010') );
-            $a = get_posts($args);
-            foreach($a as $item)
-            {
-               //var_dump(get_post_meta($item->ID));
-                foreach (get_post_meta($item->ID) as $record_key=>$record_data)
-                {
-                    $field_object = get_field_object($record_key,$post->ID);
-                    echo $field_object['label']." ";
-                }
-                echo "\r\n";
-           }
-  var_dump($a  );

@@ -6,7 +6,7 @@ Plugin Name: Import to Yandex Market
 
 Description: Import to Yandex Market
 
-Version: 1.0
+Version: 0.1
 
 Author: UkDmS
 
@@ -42,7 +42,7 @@ class yaMarket {
             <input id="tab2" type="radio" name="tabs">
             <label for="tab2" title="Настройки экспорта">Настройки экспорта</label>
             <input id="tab3" type="radio" name="tabs">
-            <label for="tab3" title="Категории">Категории</label>
+            <label for="tab3" title="Категории">Категории/свойства</label>
             <section id="content-tab1">
                 <form action='options.php' method='post' id='defaultForm'>
                 <?php
@@ -78,8 +78,8 @@ class yaMarket {
                     # $page(строка) (обязательный) - Идентификатор страницы админ-панели на которой нужно вывести блоки опций. Должен совпадать с параметром $page из add_settings_section( $id, $title, $callback, $page ).
                     do_settings_sections( 'ymlCategoryPage' );
                     submit_button();
-                    $cron_zadachi = get_option( 'cron' );
-                    var_dump( $cron_zadachi );
+                    //$cron_zadachi = get_option( 'cron' );
+                    //var_dump( $cron_zadachi );
                     ?>
                 </form>
             </section>
@@ -151,21 +151,21 @@ class yaMarket {
     function yml_short_name_shop() {
         $options = get_option( 'yml_settings' );
         ?>
-            <input type='text' name='yml_settings[yml_short_name_shop]' value='<?php echo $options['yml_short_name_shop']; ?>'>
+            <input type='text' name='yml_settings[yml_short_name_shop]' value='<?php echo $options['yml_short_name_shop']; ?>' size='50'>
         <?php
     }
 
     function yml_full_name_shop() {
         $options = get_option( 'yml_settings' );
         ?>
-        <input type='text' name='yml_settings[yml_full_name_shop]' value='<?php echo $options['yml_full_name_shop']; ?>'>
+        <input type='text' name='yml_settings[yml_full_name_shop]' value='<?php echo $options['yml_full_name_shop']; ?>' size='50'>
         <?php
     }
 
     function yml_url_shop() {
         $options = get_option( 'yml_settings' );
         ?>
-        <input type='text' name='yml_settings[yml_url_shop]' value='<?php echo $options['yml_url_shop']; ?>'>
+        <input type='text' name='yml_settings[yml_url_shop]' value='<?php echo $options['yml_url_shop']; ?>' size='50'>
         <?php
     }
 
@@ -175,25 +175,29 @@ class yaMarket {
         {
         ?>
         <div class="form-group">
-                    <div class="col-lg-6">
-                        <input class="form-control" type="text" name="yml_settings[yml_currency][]"  value='<?php echo $options['yml_currency']; ?>'/>
-                    </div>
+                    <div class='row'>
                     <div class="col-lg-2">
-                        <input class="form-control" type="text" name="yml_settings[yml_rate][]" value='<?php echo $options['yml_rate']; ?>'/>
+                        <input class="form-control" type="text" name="yml_settings[yml_currency][]"  value='<?php echo $options['yml_currency']; ?>' size='5'/>
                     </div>
-                    <div class="col-lg-4">
+                    <div class="col-lg-3">
+                        <input class="form-control" type="text" name="yml_settings[yml_rate][]" value='<?php echo $options['yml_rate']; ?>' size='10'/>
+                    </div>
+                    <div class="col-lg-3">
                         <button type="button" class="btn btn-default btn-sm addButton" data-template="currency-rate">Добавить</button>
+                    </div>
                     </div>
                 </div>
                 <div class="form-group hide" id="currency-rateTemplate">
-                    <div class="col-lg-6">
-                        <input class="form-control" type="text" />
+                    <div class='row'>
+                    <div class="col-lg-2">
+                        <input class="form-control" type="text" size='5'/>
                     </div>
                     <div class="col-lg-3">
-                        <input class="form-control" type="text" />
+                        <input class="form-control" type="text" size='10'/>
                     </div>
                     <div class="col-lg-3">
-                        <button type="button" class="btn btn-default btn-sm removeButton">Remove</button>
+                        <button type="button" class="btn btn-default btn-sm removeButton">Удалить</button>
+                    </div>
                     </div>
                 </div>
         <?php
@@ -203,14 +207,16 @@ class yaMarket {
             function show($n, $m,$k)
             {
                  return("<div class='form-group' number='$k'>
-                        <div class='col-lg-6'>
-                            <input class='form-control' type='text' number='$k' name='yml_settings[yml_currency][]'  value='$n'/>
+                        <div class='row'>
+                        <div class='col-lg-2'>
+                            <input class='form-control' type='text' number='$k' name='yml_settings[yml_currency][]'  value='$n'  size='5'/>
                         </div>
                         <div class='col-lg-3'>
-                            <input class='form-control' type='text' name='yml_settings[yml_rate][]' value='$m'/>
+                            <input class='form-control' type='text' name='yml_settings[yml_rate][]' value='$m' size='10'/>
                         </div>
                         <div class='col-lg-3'>
                             <button type='button' number='$k' class='btn btn-default btn-sm remove'>Удалить</button>
+                        </div>
                         </div>
                     </div>");
             }
@@ -226,18 +232,20 @@ class yaMarket {
             }
             ?>
             <div class="form-group hide" id="currency-rateTemplate">
-                <div class="col-lg-6">
-                    <input class="form-control" type="text" />
+                <div class='row'>
+                <div class="col-lg-2">
+                    <input class="form-control" type="text" size='5'/>
                 </div>
                 <div class="col-lg-3">
-                    <input class="form-control" type="text" />
+                    <input class="form-control" type="text" size='10'/>
                 </div>
                 <div class="col-lg-3">
-                    <button type="button" class="btn btn-default btn-sm removeButton">Remove</button>
+                    <button type="button" class="btn btn-default btn-sm removeButton">Удалить</button>
+                </div>
                 </div>
             </div>
             <?
-            echo "<div class='col-lg-3 col-lg-offset-9'><button type='button' class='btn btn-default btn-sm addButton' data-template='currency-rate'>Добавить</button>
+            echo "<div class='col-lg-3 col-lg-offset-7'><button type='button' class='btn btn-default btn-sm addButton' data-template='currency-rate'>Добавить</button>
                         </div>";
         }
     }
@@ -301,8 +309,28 @@ class yaMarket {
             else
             echo "<input type='checkbox' name='yml_settings_category[yml_list_category][]' value='".$category->term_id."'> ".$category->name."</input><br>";
         }
-        ?>
-        <?php
+        echo "<h2>Параметры</h2>"."\r\n";
+         $args = array( 'numberposts'=>'-1',
+                        'post_type'=>'acf'//,
+                        //'include'=>array('4001','4006','4002','4003','4004','4007','4008','4009','4010')
+                        );
+            $a = get_posts($args);
+            foreach($a as $item)
+            {
+                echo "<div class='item-section'><span>".$item->post_title."</span>";
+                foreach (get_post_meta($item->ID) as $record_key=>$record_data)
+                {
+                    $field_object = get_field_object($record_key,$post->ID);
+                    if(!empty($field_object['label']))
+                    {
+                        if(in_array($field_object['name'],$options['yml_list_options']))
+                        echo "<input type='checkbox' name='yml_settings_category[yml_list_options][]' value='".$field_object['name']."' checked> ".$field_object['label']."</input><br>";
+                        else
+                        echo "<input type='checkbox' name='yml_settings_category[yml_list_options][]' value='".$field_object['name']."'> ".$field_object['label']."</input><br>";
+                    }
+                }
+                echo "</div>";
+           }
     }
 
     function load_styles()
