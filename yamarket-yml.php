@@ -391,7 +391,6 @@ add_action('admin_init',add_filter( 'cron_schedules', 'myprefix_add_weekly_cron_
         }
         add_action( 'myprefix_my_cron_action', 'myprefix_function_to_run' );
         function myprefix_function_to_run() {
-                  //mail('ukolov_07@mail.ru', 'My Subject', 'test send madil');
                         $ch = curl_init();
                         $url = "http://wp.goodweb.me/wp-content/plugins/yamarket-yml/yml.php";
                         curl_setopt($ch, CURLOPT_URL,$url);
