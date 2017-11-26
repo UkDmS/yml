@@ -43,6 +43,8 @@ class yaMarket {
             <label for="tab2" title="Настройки экспорта">Настройки экспорта</label>
             <input id="tab3" type="radio" name="tabs">
             <label for="tab3" title="Категории">Категории/свойства</label>
+            <input id="tab4" type="radio" name="tabs">
+            <label for="tab4" title="Обновление">Обновление</label>
             <section id="content-tab1">
                 <form action='options.php' method='post' id='defaultForm'>
                 <?php
@@ -82,6 +84,20 @@ class yaMarket {
                     //var_dump( $cron_zadachi );
                     ?>
                 </form>
+            </section>
+            <section id="content-tab4">
+            <?
+            date_default_timezone_set('Europe/Moscow');
+            $path = wp_upload_dir();
+            $a = plugins_url();
+            $dir = plugin_dir_path( __FILE__ );
+            $count = explode("/",$dir);
+            $count = array_diff($count, array(''));
+            $options = get_option( 'yml_settings_file' );
+            $filename = $path['basedir']."/tmp/".$options['yml_file_path'];
+            echo "<button id='reload' data-path='".$a."/".$count[count($count)]."/yml.php'>Обновить</button>";
+            echo "<br>В последний раз файл  был изменен: " . date ('Y-m-d H:i', filemtime($filename));
+            ?>
             </section>
         </div>
     <?php
@@ -355,6 +371,7 @@ class yaMarket {
         wp_register_script('bootstrapValidator.js', plugins_url( '/js/bootstrapValidator.js', __FILE__ ));
         wp_register_script('jquery.min.js', plugins_url( 'js/jquery.min.js', __FILE__ ));
         wp_register_script('script.js', plugins_url( 'js/script.js', __FILE__ ));
+        wp_register_script('button.js', plugins_url( 'js/button.js', __FILE__ ));
         # wp_enqueue_style( $handle, $src, $deps, $ver, $media );
         # $handle(строка) (обязательный) - Название файла стилей (идентификатор). Строка в нижнем регистре. Если строка содержит знак вопроса (?): scriptaculous?v=1.2, то предшествующая часть будет названием скрипта, а все что после будет добавлено в УРЛ как параметры запроса. Так можно указывать версию подключаемого скрипта.
         # $src(строка/логический) - УРЛ к файлу стилей. Например, http://site.ru/css/style.css. Не нужно указывать путь жестко, используйте функции: plugins_url() (для плагинов) и get_template_directory_uri() (для тем). Внешние домены можно указывать с неявным протоколом //notmysite.ru/css/style.css.
@@ -411,3 +428,4 @@ function yml_deactivate(){
      remove_menu_page('yandex') ;
 
 }
+?>
