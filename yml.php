@@ -1,5 +1,6 @@
 <?
 require('../../../wp-load.php');
+//if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class yml
 {
     public $startTime;
@@ -197,4 +198,4 @@ $yml = new yml($startTime = microtime(true));
 $market =  $yml->render_xml();
 $yml->set_header();
 $yml->save_file($market);
-//echo $market;
+

@@ -1,20 +1,17 @@
 <?php
-
+//if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /*
 
 Plugin Name: Import to Yandex Market
-
+Plugin URI: https://github.com/UkDmS/yml
 Description: Import to Yandex Market
-
 Version: 0.1
-
 Author: UkDmS
-
-License: GPLv2
+Author URI:
+License: GPLv2 or later
 
 */
-//wp_clear_scheduled_hook( 'myprefix_my_cron_action');
-//wp_unschedule_event( wp_next_scheduled( 'myprefix_my_cron_action' ), 'myprefix_my_cron_action' );
+
 class yaMarket {
     function __construct(){
         add_action( 'admin_menu', array( $this, 'yml_add_admin_menu' ) );
@@ -369,9 +366,9 @@ class yaMarket {
         wp_register_style( 'bootstrapValidator.css', plugins_url( '/css/bootstrapValidator.css', __FILE__ ), array(), '', 'all' );
         wp_register_script('bootstrap.min.js', plugins_url( '/js/bootstrap.min.js', __FILE__ ));
         wp_register_script('bootstrapValidator.js', plugins_url( '/js/bootstrapValidator.js', __FILE__ ));
-        wp_register_script('jquery.min.js', plugins_url( 'js/jquery.min.js', __FILE__ ));
         wp_register_script('script.js', plugins_url( 'js/script.js', __FILE__ ));
         wp_register_script('button.js', plugins_url( 'js/button.js', __FILE__ ));
+        wp_register_script('reload.js', plugins_url( 'js/reload.js', __FILE__ ));
         # wp_enqueue_style( $handle, $src, $deps, $ver, $media );
         # $handle(строка) (обязательный) - Название файла стилей (идентификатор). Строка в нижнем регистре. Если строка содержит знак вопроса (?): scriptaculous?v=1.2, то предшествующая часть будет названием скрипта, а все что после будет добавлено в УРЛ как параметры запроса. Так можно указывать версию подключаемого скрипта.
         # $src(строка/логический) - УРЛ к файлу стилей. Например, http://site.ru/css/style.css. Не нужно указывать путь жестко, используйте функции: plugins_url() (для плагинов) и get_template_directory_uri() (для тем). Внешние домены можно указывать с неявным протоколом //notmysite.ru/css/style.css.
@@ -385,41 +382,14 @@ class yaMarket {
         wp_enqueue_style( 'custom-style' );
         wp_enqueue_style( 'bootstrap.css' );
         wp_enqueue_style( 'bootstrapValidator.css' );
-        wp_enqueue_script('jquery.min.js');
         wp_enqueue_script('script.js');
         wp_enqueue_script('bootstrap.min.js');
         wp_enqueue_script('bootstrapValidator.js');
+        wp_enqueue_script('reload.js');
     }
 }
 
 new yaMarket();
-
-add_action('admin_init',add_filter( 'cron_schedules', 'myprefix_add_weekly_cron_schedule' ));
-        function myprefix_add_weekly_cron_schedule( $schedules ) {
-                                $schedules['hour1'] = array(
-                                        'interval' => 600,
-                                        'display'  => ( 'Каждую минуту' ),
-                                );
-                                return $schedules;
-                        }
-
-        if (!wp_next_scheduled( 'myprefix_my_cron_action' ) ) {
-            wp_schedule_event( time(), 'hour', 'myprefix_my_cron_action' );
-        }
-        add_action( 'myprefix_my_cron_action', 'myprefix_function_to_run' );
-        function myprefix_function_to_run() {
-                        $ch = curl_init();
-                        $url = "http://wp.goodweb.me/wp-content/plugins/yamarket-yml/yml.php";
-                        curl_setopt($ch, CURLOPT_URL,$url);
-                        curl_setopt($ch, CURLOPT_HEADER, 1); // читать заголовок
-                        curl_setopt($ch, CURLOPT_NOBODY, 1); // читать ТОЛЬКО заголовок без тела
-                        $result = curl_exec($ch);
-                        curl_close($ch);
-                        echo $result;
-        }
-
-
-
 
 register_deactivation_hook(__FILE__, 'yml_deactivate' );
 
